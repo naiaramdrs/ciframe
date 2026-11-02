@@ -163,6 +163,85 @@ a:active {
   margin: auto;
   clear: both;
 }
+/* Página de sequências */
+.sequencia-panel-topo {
+  padding: 70px 15px 0;
+}
+.sequencia-panel .viewWindow-panel-container {
+  padding-top: 0;
+  padding-bottom: 40px;
+}
+.sequencia-panel-topo h4 {
+  margin: 0 0 18px;
+}
+.sequencia-cadastro {
+  margin-bottom: 20px;
+}
+.sequencia-cadastro .alert {
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+.sequencia-form-acoes {
+  margin-top: 4px;
+}
+.sequencia-form-acoes .btn + .btn {
+  margin-left: 6px;
+}
+.sequencia-item {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 28px;
+  cursor: pointer;
+}
+.sequencia-item + .sequencia-item {
+  padding-top: 24px;
+  border-top: solid 1px rgba(255, 255, 255, 0.3);
+}
+.sequencia-item::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.sequencia-nome {
+  margin: 0 0 10px;
+  text-align: left;
+  word-wrap: break-word;
+}
+.sequencia-item .acordes-container {
+  width: 100%;
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .sequencia-page {
+    padding-top: 70px;
+    background: linear-gradient(to right, #BA007C 0%, #BA007C 50%, #FFFFFF 50%, #FFFFFF 100%);
+  }
+  .sequencia-page .viewWindow-panel {
+    height: calc(100vh - 70px);
+  }
+  .sequencia-page .viewWindow-panel-container {
+    padding-top: 30px;
+  }
+  .sequencia-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sequencia-panel-topo {
+    flex: 0 0 auto;
+    padding: 20px 15px 0;
+  }
+  .sequencia-panel .viewWindow-panel-container {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-top: 0;
+  }
+}
+@media (min-width: 992px) {
+  .sequencia-page {
+    background: linear-gradient(to right, #BA007C 0%, #BA007C 33.3333%, #FFFFFF 33.3333%, #FFFFFF 100%);
+  }
+}
 /* Acorde directive*/
 .acorde-wrapper {
   float: left;

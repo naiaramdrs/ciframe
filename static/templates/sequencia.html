@@ -1,11 +1,43 @@
-<div class="container-fluid">
+<div class="container-fluid sequencia-page">
   <div class="row">
-    <div class="col-sm-6 col-md-4 viewWindow-panel viewWindow-panel-C">
-      <div class="viewWindow-panel-container">
+    <div class="col-sm-6 col-md-4 viewWindow-panel viewWindow-panel-C sequencia-panel">
+      <div class="sequencia-panel-topo">
         <h4 class="text-center">Aponte uma sequencia de acordes</h4>
-        <div class="acordes-container" ng-repeat='sequencia in Sequencia.sequenciasFamosas' ng-click="Sequencia.pesquisarPorSequencia(sequencia)">
-          <df-hex acorde="{{acordeon.acorde}}" acorde-color="{{acordeon.cor}}" acorde-checked="Sequencia.temAcorde(acordeon)" ng-repeat="acordeon in sequencia.acordes"></df-hex>
+
+        <div class="sequencia-cadastro">
+          <button type="button" class="btn btn-default btn-block"
+            ng-show="!Sequencia.formularioAberto"
+            ng-click="Sequencia.abrirFormulario()">Cadastrar sequência</button>
+
+          <div class="sequencia-formulario" ng-show="Sequencia.formularioAberto">
+            <div class="form-group">
+              <input type="text" class="form-control" ng-model="Sequencia.novaSequencia.nome" placeholder="Nome (opcional)">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" ng-model="Sequencia.novaSequencia.acordes" placeholder="Bm, G, D, A">
+            </div>
+            <div class="sequencia-form-acoes">
+              <button type="button" class="btn btn-default" ng-click="Sequencia.cadastrarSequencia()">Cadastrar</button>
+              <button type="button" class="btn btn-link" ng-click="Sequencia.cancelarCadastro()">Cancelar</button>
+            </div>
+            <div class="alert alert-danger" ng-show="Sequencia.erroCadastro">{{Sequencia.erroCadastro}}</div>
+          </div>
+
+          <div class="alert alert-success" ng-show="Sequencia.sucessoCadastro">{{Sequencia.sucessoCadastro}}</div>
         </div>
+      </div>
+
+      <div class="viewWindow-panel-container">
+        <div class="alert alert-danger" ng-show="Sequencia.erroCatalogo">{{Sequencia.erroCatalogo}}</div>
+        <hr>
+
+        <div class="sequencia-item" ng-repeat="sequencia in Sequencia.sequenciasFamosas" ng-click="Sequencia.pesquisarPorSequencia(sequencia)">
+          <p class="sequencia-nome">{{Sequencia.nomeSequencia(sequencia)}}</p>
+          <div class="acordes-container">
+            <df-hex acorde="{{acordeon.acorde}}" acorde-color="{{acordeon.cor}}" acorde-checked="Sequencia.temAcorde(acordeon)" ng-repeat="acordeon in sequencia.acordes"></df-hex>
+          </div>
+        </div>
+
         <br style="clear: both;">
         <button class="search-results-count" ng-if="Sequencia.showSearchResultsCount" ng-click="Sequencia.goToResults()">
           <span class="glyphicon glyphicon-triangle-bottom bounce animated infinite"></span>
@@ -16,7 +48,11 @@
     </div>
     <div id="results" class="col-sm-6 col-md-8 viewWindow-panel viewWindow-panel-D">
       <div class="viewWindow-panel-container">
-        <div ng-show="Sequencia.minhaSequencia.acordes.length">
+        <div class="sequencia-boas-vindas" ng-show="!Sequencia.minhaSequencia.acordes || !Sequencia.minhaSequencia.acordes.length">
+          <h4 class="text-center">Bem-vindo ao deciframe! Para começar, selecione uma sequência de acordes e descubra quais músicas você pode tocar com ela.</h4>
+        </div>
+
+        <div ng-show="Sequencia.minhaSequencia.acordes && Sequencia.minhaSequencia.acordes.length">
           <h4>{{Sequencia.esfigeSpeech}}</h4>
           <div class="row">
             <div class="col-md-3">
