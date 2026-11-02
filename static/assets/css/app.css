@@ -211,6 +211,52 @@ a:active {
   width: 100%;
   margin: 0;
 }
+.sequencia-boas-vindas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 24px 15px;
+  text-align: center;
+}
+.sequencia-boas-vindas-saudacao {
+  margin: 0;
+  color: #333;
+  font-size: 20px;
+  line-height: 1.2;
+}
+.sequencia-boas-vindas-logo {
+  width: 260px;
+  max-width: 100%;
+  margin: 8px 0 14px;
+  line-height: 0;
+}
+.sequencia-boas-vindas-logo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.sequencia-boas-vindas-logo svg .logo-d,
+.sequencia-boas-vindas-logo svg .logo-e1,
+.sequencia-boas-vindas-logo svg .logo-c,
+.sequencia-boas-vindas-logo svg .logo-i,
+.sequencia-boas-vindas-logo svg .logo-dot1,
+.sequencia-boas-vindas-logo svg .logo-f,
+.sequencia-boas-vindas-logo svg .logo-r,
+.sequencia-boas-vindas-logo svg .logo-a,
+.sequencia-boas-vindas-logo svg .logo-dot,
+.sequencia-boas-vindas-logo svg .logo-m,
+.sequencia-boas-vindas-logo svg .logo-e {
+  fill: #2E1C74;
+}
+.sequencia-boas-vindas-instrucao {
+  max-width: 460px;
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.45;
+}
 @media (min-width: 768px) {
   .sequencia-page {
     padding-top: 70px;
@@ -221,6 +267,12 @@ a:active {
   }
   .sequencia-page .viewWindow-panel-container {
     padding-top: 30px;
+  }
+  .sequencia-boas-vindas {
+    position: relative;
+    top: 20px;
+    min-height: calc(100vh - 170px);
+    padding: 0 15px;
   }
   .sequencia-panel {
     display: flex;

@@ -154,3 +154,15 @@ Estes ajustes não alteram a API nem a regra de matching.
 19. [x] Ocultar a mensagem ao selecionar uma sequência e reexibi-la ao limpar a
     pesquisa, sem substituir o estado de busca sem resultados.
 20. [x] Validar o comportamento em tela ampla e estreita e registrar no relatório.
+
+## Refinamento da mensagem inicial
+
+21. [x] Centralizar o bloco de boas-vindas vertical e horizontalmente na área de
+    resultados.
+22. [x] Exibir "Bem-vindo ao" e, abaixo, a logo Decifra-me reutilizando o SVG de
+    `static/index.html` com todas as letras e pontos em `#2E1C74`, sem alterar a
+    logo branca do painel.
+23. [x] Exibir a instrução em tamanho menor e cor mais suave, sem imagens, caixas,
+    hexágonos ou fundos adicionais.
+24. [x] Manter o bloco oculto ao selecionar, visível ao limpar e sem cortes ou
+    overflow em tela estreita.

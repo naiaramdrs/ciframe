@@ -57,12 +57,19 @@ matching:
 - com `400` e `409`, o formulário permanece aberto e mantém nome, acordes e
   mensagem de erro; no sucesso, fecha, limpa os campos e mantém o alerta de
   sucesso; em cancelar, fecha e limpa campos e mensagens;
-- a área de resultados mostra a mensagem de boas-vindas quando não há sequência
-  selecionada; ela some ao selecionar, volta ao limpar a pesquisa e permanece
-  oculta quando uma busca selecionada não retorna músicas;
+- a área de resultados mostra o bloco de boas-vindas centralizado vertical e
+  horizontalmente (`offset` 0 em relação ao centro do painel em `1280`, `1024` e
+  `768`), com "Bem-vindo ao", a logo Decifra-me e a instrução em `14px` cinza;
+- todas as 11 formas e pontos da logo no bloco usam `rgb(46, 28, 116)`
+  (`#2E1C74`), enquanto a logo do navbar continua branca;
+- o bloco some ao selecionar, volta ao limpar a pesquisa e permanece oculto
+  quando uma busca selecionada não retorna músicas;
 - em `767x800`, `375x800` e `320x800` o layout empilha, a página rola, o logo sai
   da tela com a rolagem, não há overflow horizontal e os campos/ações cabem na
-  largura disponível.
+  largura disponível;
+- em `375x800` e `320x800` o bloco de boas-vindas mantém o centro do painel,
+  usa no máximo a largura disponível e não altera a posição da lista de
+  sequências.
 
 ## Como rodar
 
