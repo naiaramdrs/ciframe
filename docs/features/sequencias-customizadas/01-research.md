@@ -32,6 +32,16 @@
 
 ### 1. Algoritmo de matching
 
+**Hipótese investigada.** Uma sequência X aparece na música Y quando X ocorre
+como um bloco **contíguo** de acordes dentro da cifra de Y, na mesma ordem e
+preservando as repetições internas desse bloco, após normalização de caixa. Para
+reproduzir a tag atual, há ainda uma condição de vocabulário: todos os acordes de Y
+precisam pertencer ao conjunto de acordes de X; qualquer acorde extra fora desse
+conjunto invalida o match. Portanto: **ordem importa; repetições dentro do bloco
+importam; repetições fora do bloco não invalidam**, desde que o acorde pertença à
+sequência; a única normalização existente é **caixa (minúsculas)**, sem
+equivalência entre `C#`/`Db` ou `Am`/`Am7`.
+
 Hoje não existe matching em tempo real para sequências. `GET /similares?sequencia=`
 remove as vírgulas, procura a string exata no dicionário `sequencias`
 (`main.py:40-45`) e só então verifica `str(id_seq) in musica.seqs_famosas`
@@ -40,21 +50,20 @@ remove as vírgulas, procura a string exata no dicionário `sequencias`
 ordem (`main.py:230-263`).
 
 A tag `SEQ_FAMOSA` foi pré-computada por `get_famosas`
-(`scripts/generate_data_set.py:7-24`) com duas condições simultâneas:
+(`scripts/generate_data_set.py:7-24`) exatamente com essas duas condições:
 
 - a sequência em minúsculas precisa ser substring literal **contígua** da cifra
   também em minúsculas (`scripts/generate_data_set.py:12-13`);
 - **todos** os acordes da música precisam pertencer ao conjunto de acordes da
   sequência (`scripts/generate_data_set.py:16-20`).
 
-Consequências: ordem e adjacência importam; acordes extras na música desqualificam;
-repetição entre os acordes da ocorrência quebra a substring, mas repetições em
-outras partes não quebram a segunda condição; a geração ignora caixa, mas a busca
-no dicionário é case-sensitive; não há normalização de acordes como `C#`/`Db` ou
-`Am`/`Am7`. `musica.cifra` preserva ordem e repetição, enquanto
-`musica.acordes = list(set(cifra))` perde ambas (`musica.py:16-17`). Os scripts
-`normalize_chords.R` e `simplify_chords.R` normalizam acordes, mas não são usados
-pelo app.
+Na prática, isso torna o match restritivo: a ordem e a adjacência importam,
+repetições internas precisam aparecer no bloco e acordes extras desqualificam. A
+geração ignora caixa, mas o endpoint não aplica essa normalização: a busca no
+dicionário é case-sensitive. `musica.cifra`
+preserva ordem e repetição, enquanto `musica.acordes = list(set(cifra))` perde
+ambas (`musica.py:16-17`). Os scripts `normalize_chords.R` e
+`simplify_chords.R` normalizam acordes, mas não são usados pelo app.
 
 ### 2. Validação da hipótese
 
