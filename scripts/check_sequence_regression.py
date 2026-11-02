@@ -16,7 +16,6 @@ os.chdir(BASE_DIR)
 sys.path.insert(0, str(BASE_DIR))
 
 import main  # noqa: E402
-from matching import sequencia_aparece_em  # noqa: E402
 from sequencias_db import ler_sequencias_originais  # noqa: E402
 
 
@@ -34,32 +33,52 @@ def carregar_baseline(id_seq):
         return ids_json(json.load(arquivo))
 
 
+def buscar_similares(cliente, acordes):
+    encontrados = []
+    pagina = 1
+    while True:
+        response = cliente.get('/similares', query_string={
+            'sequencia': ','.join(acordes),
+            'pagina': pagina,
+        })
+        if response.status_code != 200:
+            raise RuntimeError('GET /similares retornou %d na página %d' % (
+                response.status_code, pagina))
+        lote = json.loads(response.get_data(as_text=True))
+        encontrados.extend(lote)
+        if len(lote) < main.TAM_PAGINA:
+            return encontrados
+        pagina += 1
+
+
 def comparar_sequencia(id_seq, nome, acordes):
     esperado = [musica for musica in main.musicas.values()
                 if str(id_seq) in musica.seqs_famosas]
-    encontrado = [musica for musica in main.musicas.values()
-                  if sequencia_aparece_em(acordes, musica.cifra)]
+    encontrado = buscar_similares(main.app.test_client(), acordes)
 
     falhas = []
     if len(esperado) != len(encontrado):
         falhas.append('count %d != %d' % (len(esperado), len(encontrado)))
 
     ids_esperados = ids_musicas(esperado)
-    ids_encontrados = ids_musicas(encontrado)
+    ids_encontrados = ids_json(encontrado)
     if ids_esperados != ids_encontrados:
         falhas.append('ids divergentes: faltando=%s extras=%s' % (
             sorted(ids_esperados - ids_encontrados),
             sorted(ids_encontrados - ids_esperados)))
+    if len(ids_encontrados) != len(encontrado):
+        falhas.append('ids repetidos entre páginas')
 
     ids_baseline = carregar_baseline(id_seq)
+    ids_primeira_pagina = ids_json(encontrado[:main.TAM_PAGINA])
     if id_seq < 2:
         if not ids_baseline <= ids_encontrados:
             falhas.append('baseline histórico fora do conjunto completo: %s' % (
                 sorted(ids_baseline - ids_encontrados)))
-    elif ids_encontrados != ids_baseline:
+    elif ids_primeira_pagina != ids_baseline:
         falhas.append('baseline divergente: faltando=%s extras=%s' % (
-            sorted(ids_baseline - ids_encontrados),
-            sorted(ids_encontrados - ids_baseline)))
+            sorted(ids_baseline - ids_primeira_pagina),
+            sorted(ids_primeira_pagina - ids_baseline)))
 
     print('seq%d (%s): esperado=%d encontrado=%d baseline=%d' % (
         id_seq, nome, len(esperado), len(encontrado), len(ids_baseline)))

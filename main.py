@@ -37,6 +37,9 @@ TOM = 6
 SEQ_FAMOSA = 7
 CIFRA = 8
 TAM_PAGINA = 100
+TAM_MAX_NOME_SEQUENCIA = 120
+MAX_ACORDES_SEQUENCIA = 50
+TAM_MAX_ACORDE = 20
 
 genero_musicas = {}
 generos = set()
@@ -241,9 +244,20 @@ def post_sequencias():
     if nome is not None and not isinstance(nome, str):
         return json.dumps({'erro': 'O nome deve ser texto.'}), 400
 
+    if nome is not None and len(nome.strip()) > TAM_MAX_NOME_SEQUENCIA:
+        return json.dumps({
+            'erro': 'O nome deve ter no máximo %d caracteres.'
+                    % TAM_MAX_NOME_SEQUENCIA
+        }), 400
+
     if (not isinstance(acordes_sequencia, list) or
             len(acordes_sequencia) < 2):
         return json.dumps({'erro': 'Informe pelo menos 2 acordes.'}), 400
+
+    if len(acordes_sequencia) > MAX_ACORDES_SEQUENCIA:
+        return json.dumps({
+            'erro': 'Informe no máximo %d acordes.' % MAX_ACORDES_SEQUENCIA
+        }), 400
 
     for acorde in acordes_sequencia:
         if (not isinstance(acorde, str) or not acorde or
@@ -252,6 +266,11 @@ def post_sequencias():
             return json.dumps({
                 'erro': 'Cada acorde deve ser texto não vazio, sem espaços e '
                         'sem vírgula.'
+            }), 400
+        if len(acorde) > TAM_MAX_ACORDE:
+            return json.dumps({
+                'erro': 'Cada acorde deve ter no máximo %d caracteres.'
+                        % TAM_MAX_ACORDE
             }), 400
 
     try:

@@ -1,6 +1,11 @@
 angular.module('deciframeApp').controller('SequenciaController', function($http, $window, ngProgressFactory, $anchorScroll, $location, GENEROS) {
   var COR_SEQUENCIA = '#2E1C74';
+  var MAX_NOME_SEQUENCIA = 120;
+  var MAX_ACORDES_SEQUENCIA = 50;
+  var MAX_CARACTERES_ACORDE = 20;
+  var buscaAtual = 0;
   var vm = this;
+  vm.corSequencia = COR_SEQUENCIA;
   vm.sequenciasFamosas = [];
   vm.minhaSequencia = {};
   vm.novaSequencia = { 'nome': '', 'acordes': '' };
@@ -10,6 +15,7 @@ angular.module('deciframeApp').controller('SequenciaController', function($http,
   vm.erroCatalogo = '';
   vm.isSearching = false;
   vm.showSearchResultsCount = false;
+  vm.buscaSemResultados = false;
   vm.esfigeSpeech = "";
   vm.musics = [];
   vm.generos = GENEROS;
@@ -67,9 +73,12 @@ angular.module('deciframeApp').controller('SequenciaController', function($http,
       return;
     }
 
+    var buscaId = ++buscaAtual;
     vm.progressbar.start();
     vm.esfigeSpeech = "Procurando músicas com base na sequencia...";
     vm.isSearching = true;
+    vm.buscaSemResultados = false;
+    vm.showSearchResultsCount = false;
     vm.musics = [];
 
     var apiUrl = "";
@@ -80,16 +89,35 @@ angular.module('deciframeApp').controller('SequenciaController', function($http,
     }
     $http.get(apiUrl.concat(searchString))
       .success(function(data) {
+        if (buscaId !== buscaAtual) {
+          return;
+        }
+
+        var resultados = angular.isArray(data) ? data : [];
         vm.progressbar.complete();
-        vm.esfigeSpeech = "Encontrei essas músicas";
         vm.isSearching = false;
-        vm.showSearchResultsCount = true;
-        vm.musics = data;
+        vm.musics = resultados;
+        vm.buscaSemResultados = resultados.length === 0;
+
+        if (vm.buscaSemResultados) {
+          vm.esfigeSpeech = "Nenhuma música encontrada";
+          vm.showSearchResultsCount = false;
+        } else {
+          vm.esfigeSpeech = "Encontrei essas músicas";
+          vm.showSearchResultsCount = true;
+        }
       })
-      .error(function(data) {
+      .error(function() {
+        if (buscaId !== buscaAtual) {
+          return;
+        }
+
+        vm.progressbar.complete();
         vm.esfigeSpeech = "Ops! Algo errado.";
         vm.isSearching = false;
         vm.showSearchResultsCount = false;
+        vm.buscaSemResultados = false;
+        vm.musics = [];
       });
   };
 
@@ -117,7 +145,24 @@ angular.module('deciframeApp').controller('SequenciaController', function($http,
       return;
     }
 
+    if (acordes.length > MAX_ACORDES_SEQUENCIA) {
+      vm.erroCadastro = 'Informe no máximo ' + MAX_ACORDES_SEQUENCIA + ' acordes.';
+      return;
+    }
+
+    if (acordes.some(function(acorde) {
+      return acorde.length > MAX_CARACTERES_ACORDE;
+    })) {
+      vm.erroCadastro = 'Cada acorde deve ter no máximo ' + MAX_CARACTERES_ACORDE + ' caracteres.';
+      return;
+    }
+
     var nome = (vm.novaSequencia.nome || '').trim();
+    if (nome.length > MAX_NOME_SEQUENCIA) {
+      vm.erroCadastro = 'O nome deve ter no máximo ' + MAX_NOME_SEQUENCIA + ' caracteres.';
+      return;
+    }
+
     $http.post('sequencias', { 'nome': nome || null, 'acordes': acordes })
       .success(function() {
         vm.formularioAberto = false;
@@ -137,10 +182,14 @@ angular.module('deciframeApp').controller('SequenciaController', function($http,
   };
 
   vm.limparPesquisa = function() {
+    buscaAtual++;
+    vm.progressbar.complete();
     vm.minhaSequencia = {};
     vm.musics = [];
     vm.esfigeSpeech = "";
+    vm.isSearching = false;
     vm.showSearchResultsCount = false;
+    vm.buscaSemResultados = false;
   };
 
   vm.goToLirics = function(music) {

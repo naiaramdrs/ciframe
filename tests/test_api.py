@@ -73,6 +73,29 @@ class TestApi(unittest.TestCase):
                 self.assertEqual(response.status_code, 400)
                 self.assertIn('erro', self._json(response))
 
+    def test_limites_de_payload(self):
+        acordes_no_limite = (['A' * main.TAM_MAX_ACORDE,
+                              'B' * main.TAM_MAX_ACORDE] * 25)
+        response = self.client.post('/sequencias', json={
+            'nome': 'N' * main.TAM_MAX_NOME_SEQUENCIA,
+            'acordes': acordes_no_limite,
+        })
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(self._json(response)['acordes']),
+                         main.MAX_ACORDES_SEQUENCIA)
+
+        payloads = [
+            {'nome': 'N' * (main.TAM_MAX_NOME_SEQUENCIA + 1),
+             'acordes': ['X', 'Y']},
+            {'acordes': ['X', 'Y'] * 25 + ['Z']},
+            {'acordes': ['A' * (main.TAM_MAX_ACORDE + 1), 'Y']},
+        ]
+        for payload in payloads:
+            with self.subTest(payload=payload):
+                response = self.client.post('/sequencias', json=payload)
+                self.assertEqual(response.status_code, 400)
+                self.assertIn('erro', self._json(response))
+
     def test_duplicata_ignora_caixa_e_nome(self):
         self.client.post('/sequencias', json={
             'nome': 'Primeira', 'acordes': ['X', 'Y']

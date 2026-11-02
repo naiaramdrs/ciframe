@@ -12,12 +12,14 @@
   payloads inválidos (`400`), duplicata de original e de sequência nova (`409`),
   busca das originais, caixa ignorada, forma concatenada retornando `[]`,
   sequência desconhecida e sequência nova encontrando música.
-- Total: 29 testes automatizados, todos passando.
+- `tests/test_api.py` também cobre os limites de nome, quantidade e tamanho dos acordes.
+- Total: 30 testes automatizados, todos passando.
 
 ## Teste de regressão obrigatório
 
-`python scripts/check_sequence_regression.py` comparou a regra executada em
-`musica.cifra` com as tags `SEQ_FAMOSA` e os baselines:
+`python scripts/check_sequence_regression.py` exercitou `GET /similares`
+com paginação completa (lookup no SQLite, matcher e serialização) e comparou com
+as tags `SEQ_FAMOSA` e os baselines:
 
 ```
 seq0 (Sequência de Bm): esperado=199 encontrado=199 baseline=100
@@ -57,11 +59,15 @@ matching:
 - com `400` e `409`, o formulário permanece aberto e mantém nome, acordes e
   mensagem de erro; no sucesso, fecha, limpa os campos e mantém o alerta de
   sucesso; em cancelar, fecha e limpa campos e mensagens;
+- os campos têm labels associados, limites de tamanho no cliente e no servidor;
+- busca selecionada sem resultados mostra "Nenhuma música encontrada" e uma
+  orientação para escolher/cadastrar outra sequência, sem o botão de resultados;
 - a área de resultados mostra o bloco de boas-vindas centralizado vertical e
   horizontalmente (`offset` 0 em relação ao centro do painel em `1280`, `1024` e
   `768`), com "Bem-vindo ao", a logo Decifra-me e a instrução em `14px` cinza;
 - todas as 11 formas e pontos da logo no bloco usam `rgb(46, 28, 116)`
-  (`#2E1C74`), enquanto a logo do navbar continua branca;
+  (`#2E1C74`), enquanto a logo do navbar continua branca; navbar, home e
+  boas-vindas usam a mesma diretiva `df-logo`;
 - o bloco some ao selecionar, volta ao limpar a pesquisa e permanece oculto
   quando uma busca selecionada não retorna músicas;
 - em `767x800`, `375x800` e `320x800` o layout empilha, a página rola, o logo sai

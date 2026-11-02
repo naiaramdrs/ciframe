@@ -32,7 +32,7 @@ def serializar_acordes(acordes):
     return json.dumps(acordes, ensure_ascii=False, separators=(',', ':'))
 
 
-def normalizar_acordes(acordes):
+def chave_canonica_acordes(acordes):
     return serializar_acordes([acorde.lower() for acorde in acordes])
 
 
@@ -79,7 +79,7 @@ def inicializar_banco(caminho=None):
                     (id, nome, acordes, acordes_norm, criado_em)
                 VALUES (?, ?, ?, ?, ?)
             ''', (id_seq, nome, serializar_acordes(acordes),
-                  normalizar_acordes(acordes), _agora()))
+                  chave_canonica_acordes(acordes), _agora()))
         conn.commit()
 
 
@@ -102,7 +102,7 @@ def buscar_sequencia_por_acordes(acordes, caminho=None):
             SELECT id, nome, acordes, criado_em
             FROM sequencias
             WHERE acordes_norm = ?
-        ''', (normalizar_acordes(acordes),)).fetchone()
+        ''', (chave_canonica_acordes(acordes),)).fetchone()
 
     if linha is None:
         return None
@@ -121,7 +121,7 @@ def criar_sequencia(nome, acordes, caminho=None):
                 INSERT INTO sequencias (nome, acordes, acordes_norm, criado_em)
                 VALUES (?, ?, ?, ?)
             ''', (nome, serializar_acordes(acordes),
-                  normalizar_acordes(acordes), criado_em))
+                  chave_canonica_acordes(acordes), criado_em))
             conn.commit()
         except sqlite3.IntegrityError as erro:
             if 'UNIQUE' in str(erro).upper():

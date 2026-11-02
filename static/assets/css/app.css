@@ -37,7 +37,10 @@ body {
 .page.ng-leave {
     animation: slideInLeft .5s both ease-in-out;
 }
-.navbar-brand > svg {
+.navbar-brand > df-logo {
+  display: block;
+}
+.navbar-brand svg {
   width: 200px;
 }
 .logo-d,
@@ -52,17 +55,24 @@ body {
 .logo-m,
 .logo-e { fill:#FFF; }
 
-.logo-d-color,
-.logo-e1-color { fill:#791459; }
-.logo-c-color,
-.logo-i-color,
-.logo-dot1-color,
-.logo-f-color,
-.logo-r-color,
-.logo-a-color { fill:#9C0A5D; }
-.logo-dot-color,
-.logo-m-color,
-.logo-e-color { fill:#791459; }
+.logo-home {
+  display: block;
+}
+.logo-home svg {
+  width: 300px;
+  max-width: 100%;
+}
+.logo-home svg .logo-d,
+.logo-home svg .logo-e1 { fill:#791459; }
+.logo-home svg .logo-c,
+.logo-home svg .logo-i,
+.logo-home svg .logo-dot1,
+.logo-home svg .logo-f,
+.logo-home svg .logo-r,
+.logo-home svg .logo-a { fill:#9C0A5D; }
+.logo-home svg .logo-dot,
+.logo-home svg .logo-m,
+.logo-home svg .logo-e { fill:#791459; }
 .vertical-img-wrapper {
   line-height: 500px;
 }
@@ -248,7 +258,7 @@ a:active {
 .sequencia-boas-vindas-logo svg .logo-dot,
 .sequencia-boas-vindas-logo svg .logo-m,
 .sequencia-boas-vindas-logo svg .logo-e {
-  fill: #2E1C74;
+  fill: currentColor;
 }
 .sequencia-boas-vindas-instrucao {
   max-width: 460px;
@@ -256,6 +266,11 @@ a:active {
   color: #666;
   font-size: 14px;
   line-height: 1.45;
+}
+.sequencia-sem-resultados {
+  margin: 0 0 18px;
+  color: #666;
+  font-size: 14px;
 }
 @media (min-width: 768px) {
   .sequencia-page {
@@ -265,13 +280,19 @@ a:active {
   .sequencia-page .viewWindow-panel {
     height: calc(100vh - 70px);
   }
+  .sequencia-page .viewWindow-panel-D {
+    position: relative;
+  }
   .sequencia-page .viewWindow-panel-container {
     padding-top: 30px;
   }
   .sequencia-boas-vindas {
-    position: relative;
-    top: 20px;
-    min-height: calc(100vh - 170px);
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    min-height: 0;
     padding: 0 15px;
   }
   .sequencia-panel {
