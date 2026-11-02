@@ -22,9 +22,12 @@ normalização enarmônica nem de sufixos: `C#` e `Db`, ou `Am` e `Am7`, continu
 distintos.
 
 `SEQ_FAMOSA` deixa de ser consultada no fluxo de busca e permanece no CSV apenas
-como referência para os testes de regressão. A validação mínima é reproduzir, para
-as 6 sequências originais, os mesmos conjuntos de ids e os counts já medidos
-(199/296/4/5/7/3; 67.585/67.585 linhas sem divergência).
+como referência para os testes de regressão. A pesquisa validou uma réplica da regra
+sobre a string bruta do CSV (199/296/4/5/7/3; 67.585/67.585 linhas sem divergência);
+a regra sobre `musica.cifra` ainda será validada nos testes. A validação mínima é
+reproduzir esses counts e os mesmos conjuntos de ids das 6 sequências originais,
+comparando todas as páginas com `SEQ_FAMOSA`, porque `baseline/seq1.json` e
+`baseline/seq2.json` guardam só a primeira página.
 
 **Limitação aceita:** como a música não pode ter acordes fora da sequência,
 sequências novas podem retornar poucas músicas ou nenhuma. Isso é consequência
@@ -39,10 +42,11 @@ está disponível no `python:3.9-slim` (SQLite 3.46.1). O catálogo de músicas 
 gêneros continua vindo do CSV em memória (`main.py:49-98`); apenas o catálogo de
 sequências vai para o banco.
 
-O arquivo fica em `/data/deciframe.db`, configurável por `SEQUENCES_DB`. O
-`Dockerfile` passa a declarar `VOLUME /data`, e os comandos de execução passam a
-usar um volume nomeado, por exemplo `-v deciframe-data:/data`, para que o catálogo
-sobreviva à recriação do container.
+O caminho do arquivo vem de `SEQUENCES_DB`, com um padrão local dentro do projeto
+para rodar no virtualenv. O `Dockerfile` passa a definir
+`ENV SEQUENCES_DB=/data/deciframe.db` e declarar `VOLUME /data`, e os comandos de
+execução passam a usar um volume nomeado, por exemplo `-v deciframe-data:/data`,
+para que o catálogo sobreviva à recriação do container.
 
 ### Esquema de dados (alto nível)
 
@@ -54,8 +58,8 @@ Uma tabela `sequencias`:
 - `acordes_norm`: forma canônica em minúsculas da lista, com restrição `UNIQUE`;
 - `criado_em`: timestamp de criação.
 
-O seed é idempotente e usa os acordes de `main.py:40-45` e os nomes de
-`data/mapeamento_sequencias_famosas.txt:1-6`.
+O seed é idempotente e usa `data/mapeamento_sequencias_famosas.txt:1-6` como fonte
+dos nomes e dos acordes, porque `main.py:40-45` só guarda strings concatenadas.
 
 ### API
 
@@ -64,15 +68,20 @@ O seed é idempotente e usa os acordes de `main.py:40-45` e os nomes de
 - `POST /sequencias`: recebe `{"nome": "...", "acordes": ["Bm", "G", "D", "A"]}`.
   `nome` é opcional; quando ausente ou vazio, fica `NULL` e o frontend exibe os
   próprios acordes. `acordes` precisa ter pelo menos 2 itens; cada item deve ser
-  uma string não vazia e sem whitespace. Caso contrário, retorna `400`.
+  uma string não vazia, sem whitespace e sem vírgula, que é o separador da busca.
+  Caso contrário, retorna `400`.
 - A chave de duplicata é `acordes_norm`, sem considerar o nome. Uma sequência já
   existente, ignorando caixa, retorna `409`.
 - Acordes fora do dataset são aceitos: não há validação contra o conjunto global
   `acordes`; eles simplesmente podem não encontrar músicas.
-- `GET /similares?sequencia=...` mantém o formato atual: recebe acordes separados
-  por vírgula, procura a sequência pela chave canônica, aplica o matching em tempo
-  real e preserva `generos`, `pagina` e o retorno `[]` para sequência desconhecida
-  (`main.py:170-201`).
+- `GET /similares?sequencia=...` recebe acordes separados por vírgula, como o
+  frontend já envia, procura a sequência pela chave canônica, aplica o matching em
+  tempo real e preserva `generos`, `pagina` e o retorno `[]` para sequência
+  desconhecida (`main.py:170-201`).
+- Essa busca muda em dois pontos: a forma concatenada (`BmGDA`) deixa de funcionar,
+  porque é ambígua (`C,A7` e `CA7`) e o frontend não a usa, e a caixa passa a ser
+  ignorada (`bm,g,d,a` encontra a mesma sequência). Os resultados das 6 originais
+  com vírgula não mudam.
 - Todos os endpoints continuam retornando `json.dumps(...)`, inclusive os novos.
 
 ### Frontend
@@ -89,7 +98,9 @@ mínimo de 2 acordes e envia `POST /sequencias`; o servidor continua sendo a
 autoridade da validação. Em `201`, o catálogo é recarregado; `400` e `409` são
 exibidos ao usuário. A busca continua usando `pesquisarPorSequencia` e
 `GET /similares` (`sequencia.js:55-89`), então sequências antigas e novas seguem o
-mesmo fluxo.
+mesmo fluxo. A única mudança é codificar os acordes na URL, porque hoje
+`sequencia.js:73` os concatena direto e acordes com `#` ou `+` não chegariam
+corretos ao servidor.
 
 ## Alternativas consideradas e descartadas
 
