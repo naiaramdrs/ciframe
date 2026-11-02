@@ -1,9 +1,5 @@
 # Pesquisa — Sequências de Acordes Customizadas
 
-> Preencha esta fase antes de propor qualquer solução. O objetivo é investigar as
-> perguntas abaixo com evidência real (código, dados, testes rápidos que você mesmo
-> rodou), não chutar. Apague este bloco de instruções antes de entregar.
-
 ## Perguntas que você precisa responder
 
 1. **Algoritmo de matching**: hoje, as 6 sequências hardcoded em `main.py` (linhas
